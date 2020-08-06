@@ -2,8 +2,8 @@
 
 namespace Modules\AdminHome\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Support\ServiceProvider;
 
 class AdminHomeServiceProvider extends ServiceProvider
 {
@@ -28,7 +28,9 @@ class AdminHomeServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+        if ( ! config('core.saas_enable')) {
+            $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+        }
     }
 
     /**
@@ -97,7 +99,7 @@ class AdminHomeServiceProvider extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
+        if ( ! app()->environment('production') && $this->app->runningInConsole()) {
             app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
         }
     }
@@ -120,6 +122,7 @@ class AdminHomeServiceProvider extends ServiceProvider
                 $paths[] = $path . '/modules/' . $this->moduleNameLower;
             }
         }
+
         return $paths;
     }
 }
